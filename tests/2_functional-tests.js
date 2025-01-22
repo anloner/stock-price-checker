@@ -6,9 +6,9 @@ const server = require('../server');
 chai.use(chaiHttp);
 const { assert } = chai;
 
-suite('Functional Tests', function () {
-  suite('GET /api/stock-prices => stockData object', function () {
-    test('Viewing one stock', function (done) {
+describe('Functional Tests', function () {
+  describe('GET /api/stock-prices => stockData object', function () {
+    it('Viewing one stock', function (done) {
       chai
         .request(server)
         .get('/api/stock-prices?stock=GOOG')
@@ -21,7 +21,7 @@ suite('Functional Tests', function () {
         });
     });
 
-    test('Viewing one stock and liking it', function (done) {
+    it('Viewing one stock and liking it', function (done) {
       chai
         .request(server)
         .get('/api/stock-prices?stock=GOOG&like=true')
@@ -34,7 +34,7 @@ suite('Functional Tests', function () {
         });
     });
 
-    test('Viewing the same stock and liking it again', function (done) {
+    it('Viewing the same stock and liking it again', function (done) {
       chai
         .request(server)
         .get('/api/stock-prices?stock=GOOG&like=true')
@@ -47,7 +47,7 @@ suite('Functional Tests', function () {
         });
     });
 
-    test('Viewing two stocks', function (done) {
+    it('Viewing two stocks', function (done) {
       chai
         .request(server)
         .get('/api/stock-prices?stock=GOOG&stock=MSFT')
@@ -64,7 +64,7 @@ suite('Functional Tests', function () {
         });
     });
 
-    test('Viewing two stocks and liking them', function (done) {
+    it('Viewing two stocks and liking them', function (done) {
       chai
         .request(server)
         .get('/api/stock-prices?stock=GOOG&stock=MSFT&like=true')
