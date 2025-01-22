@@ -50,7 +50,7 @@ suite('Functional Tests', function () {
     test('Viewing two stocks', function (done) {
       chai
         .request(server)
-        .get('/api/stock-prices?stock=GOOG,MSFT')
+        .get('/api/stock-prices?stock=GOOG&stock=MSFT')
         .end(function (err, res) {
           assert.equal(res.status, 200);
           assert.isArray(res.body.stockData);
@@ -67,7 +67,7 @@ suite('Functional Tests', function () {
     test('Viewing two stocks and liking them', function (done) {
       chai
         .request(server)
-        .get('/api/stock-prices?stock=GOOG,MSFT&like=true')
+        .get('/api/stock-prices?stock=GOOG&stock=MSFT&like=true')
         .end(function (err, res) {
           assert.equal(res.status, 200);
           assert.isArray(res.body.stockData);

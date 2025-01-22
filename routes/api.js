@@ -1,25 +1,26 @@
 'use strict';
-const axios = require('axios'); // Hisse senedi fiyatlarını çekmek için
-const { v4: uuidv4 } = require('uuid'); // IP adreslerini anonimleştirmek için
+const axios = require('axios');
+const crypto = require('crypto');
 
 // Like işlemlerini saklamak için basit bir nesne
 const stockLikes = {};
+
+function anonymizeIP(ip) {
+  return crypto.createHash('sha256').update(ip).digest('hex');
+}
 
 module.exports = function (app) {
   app.route('/api/stock-prices')
     .get(async function (req, res) {
       const { stock, like } = req.query;
 
-      // Hisse senedi sembolünü kontrol et
       if (!stock) {
         return res.json({ error: 'Stock symbol is required' });
       }
 
-      // Birden fazla hisse senedi sembolü varsa (örneğin, "GOOG,MSFT")
       const stocks = Array.isArray(stock) ? stock : [stock];
-
-      // Hisse senedi fiyatlarını çek
       const stockData = [];
+
       for (const symbol of stocks) {
         let stockPrice;
         try {
@@ -31,20 +32,16 @@ module.exports = function (app) {
           return res.json({ error: 'Failed to fetch stock data' });
         }
 
-        // IP adresini anonimleştir
-        const ip = req.ip;
-        const hashedIp = uuidv4(); // IP adresini UUID ile anonimleştir
+        const ip = anonymizeIP(req.ip);
 
-        // Like işlemini yönet
         if (!stockLikes[symbol]) {
-          stockLikes[symbol] = { likes: new Set() }; // Her hisse senedi için like'ları sakla
+          stockLikes[symbol] = { likes: new Set() };
         }
 
-        if (like === 'true' && !stockLikes[symbol].likes.has(hashedIp)) {
-          stockLikes[symbol].likes.add(hashedIp); // Like ekle
+        if (like === 'true' && !stockLikes[symbol].likes.has(ip)) {
+          stockLikes[symbol].likes.add(ip);
         }
 
-        // Hisse senedi verisini hazırla
         stockData.push({
           stock: symbol,
           price: stockPrice,
@@ -52,7 +49,6 @@ module.exports = function (app) {
         });
       }
 
-      // İki hisse senedi karşılaştırılıyorsa, rel_likes ekle
       if (stockData.length === 2) {
         const relLikes = stockData[0].likes - stockData[1].likes;
         stockData[0].rel_likes = relLikes;
@@ -61,7 +57,6 @@ module.exports = function (app) {
         delete stockData[1].likes;
       }
 
-      // Yanıtı hazırla
       res.json({
         stockData: stockData.length === 1 ? stockData[0] : stockData,
       });
