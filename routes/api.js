@@ -28,7 +28,7 @@ module.exports = function (app) {
           );
           stockPrice = response.data.latestPrice;
         } catch (error) {
-          return res.json({ error: 'Invalid stock symbol' });
+          return res.json({ error: 'Failed to fetch stock data' });
         }
 
         // IP adresini anonimleştir
