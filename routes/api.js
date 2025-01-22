@@ -1,5 +1,6 @@
 'use strict';
-const axios = require('axios');
+const axios =
+ require('axios');
 const crypto = require('crypto');
 
 // Like işlemlerini saklamak için basit bir nesne
@@ -15,6 +16,7 @@ module.exports = function (app) {
       const { stock, like } = req.query;
 
       if (!stock) {
+        console.log('Error: No stock symbol provided');
         return res.json({ error: 'Stock symbol is required' });
       }
 
@@ -29,10 +31,12 @@ module.exports = function (app) {
           );
           stockPrice = response.data.latestPrice;
         } catch (error) {
+          console.log(`Error fetching stock data for ${symbol}:`, error.message);
           return res.json({ error: 'Failed to fetch stock data' });
         }
 
         const ip = anonymizeIP(req.ip);
+        console.log(`IP: ${req.ip}, Anonymized IP: ${ip}`);
 
         if (!stockLikes[symbol]) {
           stockLikes[symbol] = { likes: new Set() };
@@ -41,6 +45,8 @@ module.exports = function (app) {
         if (like === 'true' && !stockLikes[symbol].likes.has(ip)) {
           stockLikes[symbol].likes.add(ip);
         }
+
+        console.log(`Stock: ${symbol}, Price: ${stockPrice}, Likes: ${stockLikes[symbol].likes.size}`);
 
         stockData.push({
           stock: symbol,
@@ -56,6 +62,8 @@ module.exports = function (app) {
         delete stockData[0].likes;
         delete stockData[1].likes;
       }
+
+      console.log('Final Stock Data:', stockData);
 
       res.json({
         stockData: stockData.length === 1 ? stockData[0] : stockData,
