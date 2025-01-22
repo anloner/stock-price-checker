@@ -16,7 +16,7 @@ module.exports = function (app) {
       }
 
       // Birden fazla hisse senedi sembolü varsa (örneğin, "GOOG,MSFT")
-      const stocks = stock.split(',');
+      const stocks = Array.isArray(stock) ? stock : [stock];
 
       // Hisse senedi fiyatlarını çek
       const stockData = [];
