@@ -1,10 +1,13 @@
-image: gitpod/workspace-node-lts
-
 ports:
   - port: 3000
     onOpen: open-preview
     visibility: public
+  - port: 9229
+    onOpen: ignore
+    visibility: private # Debug için bir port
 
 tasks:
   - init: npm install
     command: npm run start
+  - name: Test Runner
+    command: npm test
